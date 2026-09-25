@@ -1,0 +1,61 @@
+#root { min-height: 100vh; }
+.site-shell { max-width: 1240px; margin: 0 auto; padding: 0 34px 72px; overflow: hidden; }
+.topbar { height: 82px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #244047; }
+.wordmark { font: 700 1.35rem/1 'Space Grotesk', sans-serif; letter-spacing: .08em; }
+.wordmark span { color: #50e3d2; }
+.desktop-nav, .nav-actions { display: flex; align-items: center; gap: 26px; }
+.desktop-nav a, .points-pill, .product-meta, .eyebrow { color: #91a8aa; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; }
+.desktop-nav a { transition: color .2s ease; }
+.desktop-nav a:hover, .text-link:hover { color: #50e3d2; }
+.points-pill { color: #c7f36b; border: 1px solid #394d34; padding: 8px 10px; }
+.icon-button, .card-heart { display: grid; place-items: center; border: 0; color: #f1f7f5; background: transparent; cursor: pointer; }
+.icon-button { position: relative; padding: 7px; }
+.cart-button span { position: absolute; top: -3px; right: -4px; display: grid; place-items: center; width: 16px; height: 16px; background: #50e3d2; color: #071014; border-radius: 50%; font-size: .65rem; }
+.hero-section { min-height: 570px; display: grid; grid-template-columns: 1fr .85fr; gap: 8%; align-items: center; padding: 76px 4% 92px; }
+.hero-copy { max-width: 570px; }
+.eyebrow { display: flex; align-items: center; gap: 8px; margin: 0 0 22px; color: #50e3d2; }
+h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; margin: 0; }
+h1 { max-width: 590px; font-size: clamp(3.5rem, 7vw, 6.8rem); line-height: .93; letter-spacing: -.07em; }
+h1 em { color: #c7f36b; font-style: normal; }
+.hero-description { max-width: 355px; margin: 30px 0 36px; color: #91a8aa; font-size: 1.02rem; line-height: 1.6; }
+.primary-link, .text-link { display: inline-flex; align-items: center; gap: 9px; transition: gap .2s ease, color .2s ease; }
+.primary-link { padding: 14px 18px; background: #50e3d2; color: #071014; font-weight: 600; }
+.primary-link:hover, .text-link:hover { gap: 13px; }
+.hero-object { position: relative; min-height: 390px; padding: 26px; border: 1px solid #244047; background: radial-gradient(circle at 55% 30%, #1b4247 0, #0d1b21 45%, #071014 72%); transform: rotate(2deg); }
+.object-label { color: #c7f36b; font-size: .7rem; letter-spacing: .14em; }
+.object-shape { width: min(72%, 310px); aspect-ratio: 1.1; margin: 45px auto 30px; display: grid; place-items: center; border: 2px solid #50e3d2; border-radius: 48% 52% 44% 56%; color: #50e3d2; transform: rotate(-16deg); box-shadow: 0 0 60px #50e3d220; }
+.object-shape span { font: 600 1.3rem 'Space Grotesk', sans-serif; letter-spacing: .15em; transform: rotate(16deg); }
+.hero-object p { margin: 0; color: #91a8aa; font-size: .85rem; line-height: 1.5; }
+.hero-object strong { color: #f1f7f5; font-weight: 500; }
+.section-block { padding: 82px 0 0; }
+.section-heading { margin-bottom: 30px; }
+.section-heading h2, .points-banner h2 { max-width: 540px; font-size: clamp(2rem, 4vw, 3.8rem); line-height: .98; letter-spacing: -.06em; }
+.category-grid { display: grid; grid-template-columns: 1.15fr .9fr .7fr; gap: 10px; }
+.category-tile { min-height: 180px; display: flex; flex-direction: column; justify-content: space-between; padding: 22px; transition: transform .25s ease; }
+.category-tile:hover { transform: translateY(-5px); }
+.category-tile span { font: 600 1.65rem 'Space Grotesk', sans-serif; }
+.category-tile small { color: #071014; font-size: .75rem; }
+.category-audio { background: #50e3d2; }
+.category-power { background: #c7f36b; margin-top: 32px; }
+.category-gear { color: #f1f7f5; background: #ff8066; margin-top: -18px; }
+.category-gear small { color: #f1f7f5; }
+.inline-heading { display: flex; align-items: end; justify-content: space-between; }
+.text-link { color: #50e3d2; font-size: .84rem; }
+.product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.product-card { position: relative; min-width: 0; }
+.product-visual { position: relative; min-height: 310px; display: grid; place-items: center; overflow: hidden; background: #13272d; }
+.product-new .product-visual { background: #173a3b; }
+.product-offer .product-visual { background: #3b2a29; }
+.product-best-seller .product-visual { background: #283c21; }
+.state-badge { position: absolute; z-index: 1; top: 14px; left: 14px; padding: 6px 8px; background: #071014; color: #50e3d2; font-size: .64rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.product-offer .state-badge { color: #ff8066; }
+.product-best-seller .state-badge { color: #c7f36b; }
+.card-heart { position: absolute; top: 13px; right: 13px; z-index: 1; }
+.product-mark { color: #f1f7f5; font: 600 clamp(1.6rem, 4vw, 3rem)/.85 'Space Grotesk', sans-serif; letter-spacing: -.09em; white-space: pre-line; text-align: center; transform: rotate(-9deg); }
+.product-meta { display: flex; justify-content: space-between; margin-top: 16px; font-size: .65rem; }
+.product-meta span:last-child { color: #c7f36b; }
+.product-card h3 { margin: 7px 0 3px; font-size: 1.05rem; font-weight: 500; }
+.product-price { font-size: .9rem; color: #91a8aa; font-weight: 500; }
+.points-banner { display: grid; grid-template-columns: 1fr .7fr; gap: 10%; align-items: end; margin-top: 110px; padding: 34px 0 0; border-top: 1px solid #244047; }
+.points-banner > p { max-width: 300px; margin: 0 0 4px; color: #91a8aa; line-height: 1.55; }
+@media (max-width: 700px) { .site-shell { padding: 0 18px 48px; } .topbar { height: 70px; } .desktop-nav { display: none; } .nav-actions { gap: 8px; } .points-pill { font-size: .6rem; } .hero-section { display: block; padding: 74px 0 56px; } h1 { font-size: clamp(3.4rem, 16vw, 5rem); } .hero-object { min-height: 300px; margin-top: 52px; } .category-grid, .product-grid { grid-template-columns: 1fr; } .category-tile, .category-power, .category-gear { min-height: 135px; margin: 0; } .product-visual { min-height: 260px; } .inline-heading, .points-banner { display: block; } .inline-heading .text-link { margin-top: 20px; } .points-banner > p { margin-top: 25px; } }
