@@ -2,7 +2,7 @@ import { createContext, useEffect, useMemo, useState, type ReactNode } from 'rea
 import type { FeaturedProduct } from '../data/products'
 
 export type CartLine = { product: FeaturedProduct; quantity: number }
-type CartContextValue = { lines: CartLine[]; itemCount: number; subtotal: number; addToCart: (product: FeaturedProduct) => void; updateQuantity: (productId: string, quantity: number) => void; removeFromCart: (productId: string) => void }
+type CartContextValue = { lines: CartLine[]; itemCount: number; subtotal: number; addToCart: (product: FeaturedProduct) => void; updateQuantity: (productId: string, quantity: number) => void; removeFromCart: (productId: string) => void; clearCart: () => void }
 const CartContext = createContext<CartContextValue | null>(null)
 const storageKey = 'vokter-cart'
 
@@ -27,7 +27,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   function addToCart(product: FeaturedProduct) { setLines((current) => { const existing = current.find((line) => line.product.id === product.id); return existing ? current.map((line) => line.product.id === product.id ? { ...line, quantity: line.quantity + 1 } : line) : [...current, { product, quantity: 1 }] }) }
   function updateQuantity(productId: string, quantity: number) { setLines((current) => quantity > 0 ? current.map((line) => line.product.id === productId ? { ...line, quantity } : line) : current.filter((line) => line.product.id !== productId)) }
   function removeFromCart(productId: string) { updateQuantity(productId, 0) }
-  return <CartContext.Provider value={{ lines, itemCount, subtotal, addToCart, updateQuantity, removeFromCart }}>{children}</CartContext.Provider>
+  function clearCart() { setLines([]) }
+  return <CartContext.Provider value={{ lines, itemCount, subtotal, addToCart, updateQuantity, removeFromCart, clearCart }}>{children}</CartContext.Provider>
 }
 
 export { CartContext }

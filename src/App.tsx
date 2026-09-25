@@ -2,16 +2,19 @@ import { useEffect } from 'react'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { Footer } from './components/layout/Footer'
 import { Navbar } from './components/layout/Navbar'
+import { AccountProvider } from './context/AccountContext'
 import { CartProvider } from './context/CartContext'
 import { WishlistProvider } from './context/WishlistContext'
-import { CartPage, AccountPage, CheckoutPage, ConfirmationPage, WishlistPage } from './pages/EmptyPage'
+import { CartPage, AccountPage, WishlistPage } from './pages/EmptyPage'
+import { CheckoutPage } from './pages/CheckoutPage'
+import { ConfirmationPage } from './pages/ConfirmationPage'
 import { CatalogPage } from './pages/CatalogPage'
 import { HomePage } from './pages/HomePage'
 import { ProductPage } from './pages/ProductPage'
 import './App.css'
 
 function App() {
-  return <BrowserRouter><ScrollToTop /><WishlistProvider><CartProvider><div className="site-shell"><Navbar /><Routes><Route path="/" element={<HomePage />} /><Route path="/tienda" element={<CatalogPage />} /><Route path="/producto/:slug" element={<ProductPage />} /><Route path="/carrito" element={<CartPage />} /><Route path="/checkout" element={<CheckoutPage />} /><Route path="/wishlist" element={<WishlistPage />} /><Route path="/cuenta" element={<AccountPage />} /><Route path="/pedido/confirmado" element={<ConfirmationPage />} /></Routes><Footer /></div></CartProvider></WishlistProvider></BrowserRouter>
+  return <BrowserRouter><ScrollToTop /><AccountProvider><WishlistProvider><CartProvider><div className="site-shell"><Navbar /><Routes><Route path="/" element={<HomePage />} /><Route path="/tienda" element={<CatalogPage />} /><Route path="/producto/:slug" element={<ProductPage />} /><Route path="/carrito" element={<CartPage />} /><Route path="/checkout" element={<CheckoutPage />} /><Route path="/wishlist" element={<WishlistPage />} /><Route path="/cuenta" element={<AccountPage />} /><Route path="/pedido/confirmado" element={<ConfirmationPage />} /></Routes><Footer /></div></CartProvider></WishlistProvider></AccountProvider></BrowserRouter>
 }
 
 function ScrollToTop() {

@@ -1,7 +1,10 @@
 import { ArrowUpRight, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react'
-import { useEffect, type ReactNode } from 'react'
+import { useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ProductCard } from '../components/catalog/ProductCard'
+import { EmptyState } from '../components/layout/EmptyState'
+import { useAccount } from '../hooks/useAccount'
+import { pointValue } from '../utils/points'
 import { useCart } from '../hooks/useCart'
 import { useWishlist } from '../hooks/useWishlist'
 import { catalogProducts } from '../data/products'
@@ -21,11 +24,8 @@ export function WishlistPage() {
 
 export function AccountPage() {
   const [searchParams] = useSearchParams()
+  const { points, orders } = useAccount()
+  const lastOrder = orders[0]
   useEffect(() => { if (searchParams.get('section') === 'points') document.getElementById('points-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }, [searchParams])
-  return <section className="page-section account-page"><p className="eyebrow">CUENTA / DEMO</p><h1>Tu espacio<br /><em>VOKTER.</em></h1><div className="account-grid"><div><p className="eyebrow">PERFIL</p><h2>Hola, Alex.</h2><p>Tu cuenta simulada está lista para conectar pedidos y preferencias.</p></div><div className="points-card" id="points-section"><p className="eyebrow">PUNTOS VOKTER</p><strong>240</strong><span>puntos disponibles</span><p>Acumula 1 punto por cada $1.000 de compra y úsalo en futuros pedidos.</p></div></div></section>
+  return <section className="page-section account-page"><p className="eyebrow">CUENTA / DEMO</p><h1>Tu espacio<br /><em>VOKTER.</em></h1><div className="account-grid"><div><p className="eyebrow">PERFIL</p><h2>Hola, {lastOrder ? lastOrder.customer.name.split(' ')[0] : 'Alex'}.</h2>{lastOrder ? <p>Tu último pedido <strong>{lastOrder.id}</strong> quedó por ${lastOrder.total.toLocaleString('es-CO')}. Llevas {orders.length} {orders.length === 1 ? 'pedido' : 'pedidos'} en esta demo.</p> : <p>Tu cuenta simulada está lista para conectar pedidos y preferencias.</p>}{lastOrder ? <Link className="text-link" to={`/pedido/confirmado?pedido=${lastOrder.id}`}>Ver último pedido <ArrowUpRight size={15} /></Link> : null}</div><div className="points-card" id="points-section"><p className="eyebrow">PUNTOS VOKTER</p><strong>{points}</strong><span>puntos disponibles</span><p>Acumula 1 punto por cada $1.000 de compra y canjéalos en el checkout: cada punto vale ${pointValue}.</p></div></div></section>
 }
-
-export function CheckoutPage() { const { subtotal } = useCart(); return <EmptyState icon={<ShoppingBag />} eyebrow="CHECKOUT / DEMO" title="Checkout simulado." description={`Resumen actual: $${subtotal.toLocaleString('es-CO')}. El formulario de envío estará disponible en la siguiente fase.`} action="Volver al carrito" to="/carrito" /> }
-export function ConfirmationPage() { return <EmptyState icon={<ArrowUpRight />} eyebrow="PEDIDO / CONFIRMADO" title="Pedido confirmado." description="Esta pantalla queda lista para recibir el resumen de compra." action="Seguir comprando" to="/tienda" /> }
-
-function EmptyState({ icon, eyebrow, title, description, action, to }: { icon: ReactNode; eyebrow: string; title: string; description: string; action: string; to: string }) { return <section className="empty-page"><div className="empty-icon">{icon}</div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>{description}</p><Link className="primary-link" to={to}>{action} <ArrowUpRight size={17} /></Link></section> }
