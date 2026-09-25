@@ -1,5 +1,5 @@
 import { Heart, ShoppingBag, UserRound } from 'lucide-react'
-import { NavLink, Link } from 'react-router-dom'
+import { NavLink, Link, useLocation } from 'react-router-dom'
 import { useCart } from '../../hooks/useCart'
 
 const navItems = [
@@ -10,11 +10,19 @@ const navItems = [
 
 export function Navbar() {
   const { itemCount } = useCart()
+  const location = useLocation()
+
+  function handlePointsClick(event: React.MouseEvent<HTMLAnchorElement>) {
+    if (location.pathname === '/cuenta') {
+      event.preventDefault()
+      document.getElementById('points-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
   return (
     <header className="topbar">
       <Link className="wordmark" to="/" aria-label="VOKTER inicio">VOKTER<span>/</span></Link>
       <nav className="desktop-nav" aria-label="Navegación principal">
-        {navItems.map((item) => <NavLink key={item.to} to={item.to}>{item.label}</NavLink>)}
+        {navItems.map((item) => <NavLink key={item.to} to={item.to} onClick={item.label === 'Puntos' ? handlePointsClick : undefined}>{item.label}</NavLink>)}
       </nav>
       <div className="nav-actions">
         <Link className="points-pill" to="/cuenta">240 pts</Link>

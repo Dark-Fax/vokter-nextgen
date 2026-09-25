@@ -67,6 +67,7 @@ h1 em { color: #c7f36b; font-style: normal; }
 .search-field { display: flex; align-items: center; gap: 10px; color: #91a8aa; }
 .search-field input { width: 240px; border: 0; outline: 0; background: transparent; color: #f1f7f5; }
 .search-field input::placeholder { color: #91a8aa; }
+.input-notice { display: block; margin-top: 8px; color: #ff8066; font-size: .72rem; }
 .catalog-toolbar select { border: 1px solid #244047; padding: 8px 12px; color: #f1f7f5; background: #0d1b21; }
 .catalog-layout { display: grid; grid-template-columns: 170px 1fr; gap: 34px; padding-top: 42px; }
 .catalog-layout aside { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
