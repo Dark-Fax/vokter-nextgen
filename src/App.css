@@ -20,6 +20,7 @@ h1 em { color: #c7f36b; font-style: normal; }
 .hero-description { max-width: 355px; margin: 30px 0 36px; color: #91a8aa; font-size: 1.02rem; line-height: 1.6; }
 .primary-link, .text-link { display: inline-flex; align-items: center; gap: 9px; transition: gap .2s ease, color .2s ease; }
 .primary-link { padding: 14px 18px; background: #50e3d2; color: #071014; font-weight: 600; }
+.primary-link.is-added { background: #c7f36b; }
 .primary-link:hover, .text-link:hover { gap: 13px; }
 .hero-object { position: relative; min-height: 390px; padding: 26px; border: 1px solid #244047; background: radial-gradient(circle at 55% 30%, #1b4247 0, #0d1b21 45%, #071014 72%); transform: rotate(2deg); }
 .object-label { color: #c7f36b; font-size: .7rem; letter-spacing: .14em; }
@@ -134,6 +135,7 @@ h1 em { color: #c7f36b; font-style: normal; }
 .detail-heart { border: 1px solid #244047; padding: 13px; }
 .detail-benefit { display: flex; align-items: center; gap: 10px; margin-top: 28px; color: #91a8aa; font-size: .78rem; }
 .detail-benefit svg { color: #50e3d2; }
+.cart-confirmation { margin: 13px 0 0; color: #c7f36b; font-size: .78rem; }
 .empty-page { min-height: 620px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; max-width: 650px; }
 .empty-icon { display: grid; place-items: center; width: 54px; height: 54px; margin-bottom: 34px; border: 1px solid #244047; color: #50e3d2; font-size: 1.6rem; }
 .empty-page h1 { font-size: clamp(3.1rem, 6vw, 5.8rem); }

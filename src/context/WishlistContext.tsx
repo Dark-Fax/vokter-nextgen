@@ -2,7 +2,6 @@ import { createContext, useEffect, useState, type ReactNode } from 'react'
 
 type WishlistContextValue = {
   wishlistIds: string[]
-  hasInWishlist: (productId: string) => boolean
   toggleWishlist: (productId: string) => void
 }
 
@@ -26,11 +25,20 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem(storageKey, JSON.stringify(wishlistIds))
   }, [wishlistIds])
 
+  useEffect(() => {
+    function syncWishlist(event: StorageEvent) {
+      if (event.key !== storageKey) return
+      setWishlistIds(readWishlist())
+    }
+    window.addEventListener('storage', syncWishlist)
+    return () => window.removeEventListener('storage', syncWishlist)
+  }, [])
+
   function toggleWishlist(productId: string) {
     setWishlistIds((current) => current.includes(productId) ? current.filter((id) => id !== productId) : [...current, productId])
   }
 
-  return <WishlistContext.Provider value={{ wishlistIds, hasInWishlist: (id) => wishlistIds.includes(id), toggleWishlist }}>{children}</WishlistContext.Provider>
+  return <WishlistContext.Provider value={{ wishlistIds, toggleWishlist }}>{children}</WishlistContext.Provider>
 }
 
 export { WishlistContext }
