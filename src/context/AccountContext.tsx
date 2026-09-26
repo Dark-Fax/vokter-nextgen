@@ -30,7 +30,13 @@ function createOrderId() { return `VK-${Date.now().toString(36).toUpperCase().sl
 
 export function AccountProvider({ children }: { children: ReactNode }) {
   const [account, setAccount] = useState(readAccount)
-  useEffect(() => { window.localStorage.setItem(storageKey, JSON.stringify(account)) }, [account])
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(account))
+    } catch {
+      // El WebView puede tener el almacenamiento bloqueado: la sesión sigue en memoria.
+    }
+  }, [account])
 
   function placeOrder({ lines, subtotal, pointsUsed, customer }: PlaceOrderInput) {
     const redeemed = maxRedeemablePoints(Math.min(pointsUsed, account.points), subtotal)

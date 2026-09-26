@@ -20,7 +20,13 @@ function readCart(): CartLine[] {
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>(readCart)
-  useEffect(() => { window.localStorage.setItem(storageKey, JSON.stringify(lines)) }, [lines])
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(lines))
+    } catch {
+      // El WebView puede tener el almacenamiento bloqueado: la sesión sigue en memoria.
+    }
+  }, [lines])
   const itemCount = useMemo(() => lines.reduce((total, line) => total + line.quantity, 0), [lines])
   const subtotal = useMemo(() => lines.reduce((total, line) => total + priceOf(line.product) * line.quantity, 0), [lines])
   function addToCart(product: FeaturedProduct) { setLines((current) => { const existing = current.find((line) => line.product.id === product.id); return existing ? current.map((line) => line.product.id === product.id ? { ...line, quantity: line.quantity + 1 } : line) : [...current, { product, quantity: 1 }] }) }
