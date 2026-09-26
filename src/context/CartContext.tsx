@@ -1,5 +1,6 @@
 import { createContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { FeaturedProduct } from '../data/products'
+import { priceOf } from '../utils/price'
 
 export type CartLine = { product: FeaturedProduct; quantity: number }
 type CartContextValue = { lines: CartLine[]; itemCount: number; subtotal: number; addToCart: (product: FeaturedProduct) => void; updateQuantity: (productId: string, quantity: number) => void; removeFromCart: (productId: string) => void; clearCart: () => void }
@@ -16,8 +17,6 @@ function readCart(): CartLine[] {
     return []
   }
 }
-
-function priceOf(product: FeaturedProduct) { return Number(product.price.replace(/[^0-9]/g, '')) }
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>(readCart)

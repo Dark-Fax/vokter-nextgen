@@ -3,7 +3,8 @@ import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ProductCard } from '../components/catalog/ProductCard'
 import { catalogProducts } from '../data/products'
-import { parsePrice, sanitizeInput } from '../utils/sanitizeInput'
+import { sanitizeInput } from '../utils/sanitizeInput'
+import { parsePrice } from '../utils/price'
 
 type SortOption = 'relevance' | 'price-asc' | 'price-desc' | 'rating'
 
