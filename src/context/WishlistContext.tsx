@@ -22,7 +22,11 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const [wishlistIds, setWishlistIds] = useState<string[]>(readWishlist)
 
   useEffect(() => {
-    window.localStorage.setItem(storageKey, JSON.stringify(wishlistIds))
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(wishlistIds))
+    } catch {
+      // El WebView puede tener el almacenamiento bloqueado: la sesión sigue en memoria.
+    }
   }, [wishlistIds])
 
   useEffect(() => {
