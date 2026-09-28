@@ -29,7 +29,8 @@ Propuesta de evolución de la tienda [VOKTER](https://vokter-five.vercel.app/): 
 10. [Decisiones técnicas](#decisiones-técnicas)
 11. [Datos del catálogo](#datos-del-catálogo)
 12. [Seguridad](#seguridad)
-13. [Limitaciones y siguientes pasos](#limitaciones-y-siguientes-pasos)
+13. [Video promocional](#video-promocional)
+14. [Limitaciones y siguientes pasos](#limitaciones-y-siguientes-pasos)
 
 ## Propuesta
 
@@ -87,11 +88,22 @@ Revisión de https://vokter-five.vercel.app/ y qué se hizo con cada punto:
 2. Abre el archivo descargado. Android pedirá permitir **"Instalar apps desconocidas"** para el navegador: es el paso normal para apps que no vienen de Play Store.
 3. Instala y abre **VOKTER**.
 
+**Si la instalación falla** (la misma guía está en la página de descarga):
+
+| Síntoma | Qué hacer |
+|---|---|
+| Aviso de Play Protect: "App peligrosa" o "no reconocida" | Es el aviso estándar para apps que no vienen de Play Store. Tocar "Más detalles" → "Instalar de todos modos". |
+| El instalador se cierra solo | Pasa sobre todo después de dar el permiso "Instalar apps desconocidas": volver a abrir el archivo desde Descargas. Si estaba instalada la versión 1.0, desinstalarla antes: la 1.1 tiene otra firma y Android no la instala encima. |
+| Samsung: "Bloqueado por Auto Blocker" | Ajustes > Seguridad y privacidad > Auto Blocker: desactivarlo mientras se instala. |
+| No pasa nada al tocar el archivo | Descargar desde Chrome, no desde la vista previa de WhatsApp, Instagram o Facebook. |
+
+Por qué aparecía el aviso con más fuerza en la versión 1.0: estaba firmada con el certificado genérico de depuración de Android (`CN=Android Debug`, el mismo de millones de builds de prueba) y marcada como depurable. La versión 1.1 es un build de *release* firmado con una clave propia de VOKTER. El aviso de "app desconocida" no desaparece del todo mientras la app no se distribuya por Play Store.
+
 | Dato | Valor |
 |---|---|
-| Archivo | `vokter.apk` (6,8 MB) |
-| Identificador | `com.vokter.app`, versión 1.0 |
-| Tipo de build | Depuración (firmado con la clave de depuración de Android), adecuado para evaluación |
+| Archivo | `vokter.apk` (5,8 MB) |
+| Identificador | `com.vokter.app`, versión 1.1 (código 2) |
+| Tipo de build | Release, no depurable, firmado con la clave de VOKTER (`CN=VOKTER, O=VOKTER, C=CO`, RSA 4096) |
 | Permisos | Solo Internet |
 
 ## Evidencias visuales
@@ -144,7 +156,8 @@ src/
                  confirmación, cuenta, favoritos, descarga
 public/          imágenes de productos (640 px y miniaturas de 320 px), QR, ícono
 android/         proyecto nativo de Android generado por Capacitor
-docs/            capturas del README
+docs/            capturas del README, guion y clips del video promocional
+scripts/e2e/     pruebas en navegador: seguridad, usuarios simulados, navegación, capturas y clips
 material-grafico/ material original entregado (capturas de catálogo, fotos, notas)
 ```
 
@@ -169,11 +182,13 @@ npm run preview    # sirve dist/ para revisarla
 npm run build
 npx cap sync android
 cd android
-./gradlew assembleDebug    # en Windows: gradlew.bat assembleDebug
-# resultado: android/app/build/outputs/apk/debug/app-debug.apk
+./gradlew assembleRelease   # en Windows: gradlew.bat assembleRelease
+# resultado: android/app/build/outputs/apk/release/app-release.apk
 ```
 
-Si Gradle no encuentra el SDK, crea `android/local.properties` con `sdk.dir=RUTA/AL/Android/Sdk` (este archivo no se versiona porque depende de cada máquina).
+- **Firma:** la versión de release se firma con la clave indicada en `android/keystore.properties` (`storeFile`, `storePassword`, `keyAlias`, `keyPassword`). Ni ese archivo ni la clave (`android/keystore/`) se versionan. Sin ese archivo, Gradle genera el APK sin firmar; para probar sin clave se puede usar `assembleDebug`.
+- **SDK:** si Gradle no lo encuentra, crea `android/local.properties` con `sdk.dir=RUTA/AL/Android/Sdk` (tampoco se versiona, porque depende de cada máquina).
+- **Java:** usa **JDK 21**. Con Java 25 (el que trae Android Studio), Gradle 8.14 no puede compilar los scripts de construcción ("Unsupported class file major version 69"); con Java 17 no compila Capacitor 8.
 
 **Publicar la web y el APK:** se compila, se copia `dist/` a una carpeta aparte junto con el APK renombrado a `vokter.apk` y un archivo vacío `.nojekyll`, y ese contenido se sube como rama `gh-pages`. GitHub Pages sirve esa rama en https://dark-fax.github.io/vokter-nextgen/.
 
@@ -194,7 +209,42 @@ Si Gradle no encuentra el SDK, crea `android/local.properties` con `sdk.dir=RUTA
 
 La primera auditoría dio 80 de rendimiento y 93 de accesibilidad en la página de inicio. Se corrigió con: fuentes incluidas en la app en lugar de Google Fonts (−1,6 s de bloqueo), miniaturas de 320 px para las tarjetas, más contraste en los textos grises, región principal (`<main>`), orden de títulos, ícono propio, descripción de la página y `robots.txt`.
 
-**Pruebas en navegador** con Puppeteer en anchos de 360, 390, 820 y 1440 px: sin desplazamiento horizontal, sin imágenes rotas ni errores de consola, y flujo completo de compra (agregar, combo, checkout, confirmación, historial). La versión publicada en GitHub Pages se verificó con la misma prueba.
+**Diseño en distintas pantallas:** revisado en anchos de 360, 390, 820 y 1440 px, sin desplazamiento horizontal, imágenes rotas ni errores de consola.
+
+**Pruebas en navegador:** están en [scripts/e2e/](scripts/e2e/). Cada una abre la tienda en un Chrome controlado por un programa, que la usa como lo haría una persona:
+
+| Script | Qué hace |
+|---|---|
+| `usuarios.mjs` | Usuarios simulados con recorridos al azar (ver abajo). |
+| `seguridad.mjs` | Los 45 ataques de la sección [Seguridad](#seguridad), más 2 compras normales de control. |
+| `navegacion.mjs` | Que elegir una categoría muestre los productos, que los filtros no muevan la página y que "atrás" vuelva al mismo punto. |
+| `capturas.mjs` / `grabar-clips.mjs` | Generan las capturas de este README y los clips del video. |
+
+```bash
+npm run build && npm run preview      # en una terminal: sirve la tienda en http://localhost:4173
+cd scripts/e2e && npm install         # en otra terminal
+npm run seguridad
+node usuarios.mjs 200 10 20           # 200 usuarios, 10 a la vez, 20 acciones cada uno
+# otro sitio: BASE_URL=https://dark-fax.github.io/vokter-nextgen/ node usuarios.mjs 5 1 10
+# si Chrome no está en la ruta habitual: CHROME_PATH=/ruta/a/chrome
+```
+
+**Usuarios simulados (bots).** Cada bot entra como teléfono (70 %) o computador (30 %) y hace acciones al azar: elegir categorías, buscar (incluso con texto malicioso), ordenar, cargar más, abrir productos, agregar productos y combos, marcar favoritos, cambiar cantidades, volver atrás, abrir enlaces inválidos y pagar con datos válidos (80 %) o inválidos (20 %). Después de cada acción revisa que la pantalla no quede vacía, que no haya errores ni solicitudes fallidas y que las cuentas del carrito cuadren (suma de productos, descuento del combo y envío). Al final comprueba que los pedidos guardados y el saldo de puntos coincidan con lo que hizo. También recorre las 86 fichas de producto y todos los enlaces internos.
+
+| | 1.ª ronda | 2.ª ronda (tras corregir) |
+|---|---|---|
+| Usuarios / acciones | 200 / 4.000 | 200 / 4.000 |
+| Compras completadas | 172 | 175 |
+| Pagos con datos inválidos rechazados | 41 | 43 |
+| Revisiones de las cuentas del carrito | 121, todas correctas | 120, todas correctas |
+| Fichas de producto y enlaces internos rotos | 0 de 86 · 0 de 100 | 0 de 86 · 0 de 100 |
+| Solicitudes de red | 19.641, todas al propio sitio | 19.655, todas al propio sitio |
+| Carga de la página (mediana / peor) | 0,86 s / 1,9 s | 0,83 s / 1,3 s |
+| Fallas | **5** | **1** |
+
+Las 5 fallas de la primera ronda eran dos problemas reales del checkout en el teléfono: el botón "Confirmar pedido" quedaba arriba del formulario, lejos del total, y la barra de navegación inferior tapaba los campos (un toque cerca del borde podía sacar a la persona del checkout). Se corrigieron moviendo el botón debajo del total y ocultando la barra mientras se escribe. Al repetir esos mismos recorridos ya no fallaron. La única falla de la segunda ronda ocurrió cuando el bot intentó escribir en el checkout mientras la pantalla todavía mostraba la tienda. Parece un problema de tiempos del propio bot, pero no se investigó más.
+
+La prueba masiva se hizo contra la versión compilada servida en local, que usa los mismos archivos que la web publicada. Sobre GitHub Pages solo se hicieron recorridos puntuales, para no cargar un servicio de terceros con tráfico automatizado.
 
 ## Decisiones técnicas
 
@@ -300,13 +350,18 @@ La app no tiene rutas protegidas (no hay inicio de sesión), así que se probó 
 ### Particularidades del APK
 
 - **Copias de seguridad:** el manifiesto de Android tenía `android:allowBackup="true"`, así que el nombre, correo, teléfono y dirección guardados en los pedidos podían terminar en las copias de seguridad del teléfono. Se cambió a `false`.
-- **APK de depuración:** en un APK *debug* se puede inspeccionar la app desde `chrome://inspect` con el teléfono conectado por USB y editar `localStorage`, igual que en el navegador. Es la forma de reproducir en el teléfono las pruebas del punto 2, y las protecciones descritas funcionan igual ahí. Un APK de *release* no permite esta inspección.
+- **Depuración desactivada:** la versión publicada (1.1) es un build de *release*, así que no se puede inspeccionar desde `chrome://inspect`. En un APK *debug* sí se puede, y editar `localStorage` igual que en el navegador; es la forma de reproducir en un teléfono las pruebas del punto 2, y las protecciones descritas funcionan igual ahí.
+- **Firma propia:** la 1.0 usaba el certificado genérico de depuración de Android; la 1.1 usa una clave de VOKTER que se guarda fuera del repositorio.
 - **Permisos:** la app solo declara `INTERNET`, el permiso por defecto de Capacitor. Hoy no lo necesita para funcionar.
+
+## Video promocional
+
+Guion de 35 segundos en español, con escenas, textos en pantalla, locución y descripciones listas para una herramienta de texto a video (por ejemplo latent-spaces): [docs/video-promocional/GUION.md](docs/video-promocional/GUION.md). Combina escenas de ambiente generadas con IA con **4 grabaciones reales de la tienda** (inicio y categorías, combo y carrito, pago con puntos, descarga de la app), listas para editar en [docs/video-promocional/clips/](docs/video-promocional/clips/): MP4 de 780 × 1688 px, de 6 a 10 segundos cada una.
 
 ## Limitaciones y siguientes pasos
 
 - **Sin servidor:** los pedidos, puntos y favoritos viven en cada dispositivo y no se sincronizan entre la web y la app. El siguiente paso natural es una API con cuentas de usuario, que además cerraría el límite de seguridad descrito arriba (pedidos inventados con cifras correctas).
 - **Pago simulado:** el checkout no cobra; integrar una pasarela de pagos requiere servidor.
-- **APK de depuración:** adecuado para evaluar. Para distribuirlo al público haría falta un build de *release* firmado con una clave propia (guardada fuera del repositorio) o publicarlo en Play Store.
+- **Distribución fuera de Play Store:** el APK ya es de release y firmado por VOKTER, pero Android seguirá mostrando el aviso de "app desconocida" mientras no se publique en Play Store (o en su canal de pruebas).
 - **Calzado:** se puede agregar en cuanto haya fotos; los precios y tallas ya están en las notas del material gráfico.
 - **Pruebas en dispositivo:** las pruebas automáticas se hicieron en navegador. En un teléfono real se verificaron la persistencia de datos y las imágenes; la corrección de la franja bajo el menú inferior está pendiente de confirmar en ese mismo teléfono.

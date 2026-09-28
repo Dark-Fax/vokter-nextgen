@@ -1,0 +1,19 @@
+{
+  "name": "vokter-e2e",
+  "private": true,
+  "type": "module",
+  "description": "Pruebas en navegador de VOKTER: seguridad, usuarios simulados, navegación, capturas y clips de video.",
+  "scripts": {
+    "seguridad": "node seguridad.mjs",
+    "usuarios": "node usuarios.mjs",
+    "navegacion": "node navegacion.mjs",
+    "capturas": "node capturas.mjs",
+    "clips": "node grabar-clips.mjs"
+  },
+  "dependencies": {
+    "puppeteer-core": "^25.12.0"
+  },
+  "optionalDependencies": {
+    "ffmpeg-static": "^5.3.0"
+  }
+}
