@@ -1,11 +1,11 @@
 import { createContext, useEffect, useState, type ReactNode } from 'react'
 import type { CartLine } from './CartContext'
-import { maxRedeemablePoints, pointValue, pointsEarnedFor } from '../utils/points'
+import { orderTotals, type OrderTotals } from '../utils/pricing'
 import { parseAccount, readStored } from '../utils/storedData'
 
 export type OrderCustomer = { name: string; email: string; phone: string; address: string; city: string }
-export type Order = { id: string; createdAt: string; lines: CartLine[]; subtotal: number; pointsUsed: number; discount: number; total: number; pointsEarned: number; customer: OrderCustomer }
-export type PlaceOrderInput = { lines: CartLine[]; subtotal: number; pointsUsed: number; customer: OrderCustomer }
+export type Order = { id: string; createdAt: string; lines: CartLine[]; customer: OrderCustomer } & OrderTotals
+export type PlaceOrderInput = { lines: CartLine[]; pointsUsed: number; customer: OrderCustomer }
 
 type AccountContextValue = { points: number; orders: Order[]; placeOrder: (input: PlaceOrderInput) => Order }
 
@@ -29,12 +29,11 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     }
   }, [account])
 
-  function placeOrder({ lines, subtotal, pointsUsed, customer }: PlaceOrderInput) {
-    const redeemed = maxRedeemablePoints(Math.min(pointsUsed, account.points), subtotal)
-    const discount = redeemed * pointValue
-    const total = Math.max(0, subtotal - discount)
-    const order: Order = { id: createOrderId(), createdAt: new Date().toISOString(), lines, subtotal, pointsUsed: redeemed, discount, total, pointsEarned: pointsEarnedFor(total), customer }
-    setAccount((current) => ({ points: Math.max(0, current.points - redeemed) + order.pointsEarned, orders: [order, ...current.orders] }))
+  // Los montos se recalculan aquí con los precios del catálogo; lo que envía la pantalla solo indica qué se compra.
+  function placeOrder({ lines, pointsUsed, customer }: PlaceOrderInput) {
+    const totals = orderTotals(lines, pointsUsed, account.points)
+    const order: Order = { id: createOrderId(), createdAt: new Date().toISOString(), lines, customer, ...totals }
+    setAccount((current) => ({ points: current.points - totals.pointsUsed + totals.pointsEarned, orders: [order, ...current.orders] }))
     return order
   }
 

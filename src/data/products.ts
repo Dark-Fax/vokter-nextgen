@@ -118,6 +118,11 @@ export const catalogProducts: FeaturedProduct[] = [
 const featuredIds = ['balaca-air-max', 'parlante-s520', 'power-bank-10000', 'conjunto-sport-coral']
 export const featuredProducts = featuredIds.flatMap((id) => catalogProducts.filter((product) => product.id === id))
 
+// Miniatura de 320 px para tarjetas y listas; la imagen de 640 px queda para pantallas grandes y el detalle.
+export function productSrcSet(product: FeaturedProduct) {
+  return `${product.image.replace('/products/', '/products/thumb/')} 320w, ${product.image} 640w`
+}
+
 export function findProduct(id: string) {
   return catalogProducts.find((product) => product.id === id)
 }

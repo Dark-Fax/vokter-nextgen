@@ -1,16 +1,21 @@
-import { ArrowUpRight, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react'
+import { ArrowUpRight, Minus, Plus, ShoppingBag, Trash2, Truck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ProductCard } from '../components/catalog/ProductCard'
 import { EmptyState } from '../components/layout/EmptyState'
 import { useCart } from '../hooks/useCart'
 import { useWishlist } from '../hooks/useWishlist'
-import { catalogProducts } from '../data/products'
+import { catalogProducts, productSrcSet } from '../data/products'
 import { maxQuantity } from '../utils/storedData'
+import { SummaryRows } from '../components/cart/SummaryRows'
+import { appliedBundles, missingForFreeShipping, orderTotals } from '../utils/pricing'
+import { formatPrice } from '../utils/price'
 
 export function CartPage() {
-  const { lines, subtotal, updateQuantity, removeFromCart } = useCart()
+  const { lines, updateQuantity, removeFromCart } = useCart()
+  const totals = orderTotals(lines, 0, 0)
+  const missing = missingForFreeShipping(lines)
   if (!lines.length) return <EmptyState icon={<ShoppingBag />} eyebrow="CARRITO / 00" title="Tu carrito todavía está vacío." description="Guarda algo para continuar cuando estés listo." action="Explorar tienda" to="/tienda" />
-  return <section className="page-section cart-page"><p className="eyebrow">CARRITO / {lines.length.toString().padStart(2, '0')} PRODUCTOS</p><h1>Lo que elegiste<br /><em>va aquí.</em></h1><div className="cart-layout"><div className="cart-lines">{lines.map((line) => <article className="cart-line" key={line.product.id}><Link className="cart-line-visual" to={`/producto/${line.product.id}`}><img src={line.product.image} alt={line.product.name} width={640} height={800} loading="lazy" decoding="async" /></Link><div className="cart-line-copy"><p className="eyebrow">{line.product.category}</p><h3>{line.product.name}</h3><strong>{line.product.price}</strong><div className="quantity-control"><button type="button" onClick={() => updateQuantity(line.product.id, line.quantity - 1)} aria-label="Reducir cantidad"><Minus size={14} /></button><span>{line.quantity}</span><button type="button" onClick={() => updateQuantity(line.product.id, line.quantity + 1)} disabled={line.quantity >= maxQuantity} aria-label="Aumentar cantidad"><Plus size={14} /></button></div></div><button className="remove-button" type="button" onClick={() => removeFromCart(line.product.id)} aria-label={`Eliminar ${line.product.name}`}><Trash2 size={16} /></button></article>)}</div><aside className="cart-summary"><p className="eyebrow">RESUMEN</p><div><span>Subtotal</span><strong>${subtotal.toLocaleString('es-CO')}</strong></div><div><span>Envío</span><strong>Gratis</strong></div><div className="summary-total"><span>Total</span><strong>${subtotal.toLocaleString('es-CO')}</strong></div><Link className="primary-link" to="/checkout">Continuar al checkout <ArrowUpRight size={17} /></Link></aside></div></section>
+  return <section className="page-section cart-page"><p className="eyebrow">CARRITO / {lines.length.toString().padStart(2, '0')} PRODUCTOS</p><h1>Lo que elegiste<br /><em>va aquí.</em></h1><div className="cart-layout"><div className="cart-lines">{lines.map((line) => <article className="cart-line" key={line.product.id}><Link className="cart-line-visual" to={`/producto/${line.product.id}`}><img src={line.product.image} srcSet={productSrcSet(line.product)} sizes="120px" alt={line.product.name} width={640} height={800} loading="lazy" decoding="async" /></Link><div className="cart-line-copy"><p className="eyebrow">{line.product.category}</p><h3>{line.product.name}</h3><strong>{line.product.price}</strong><div className="quantity-control"><button type="button" onClick={() => updateQuantity(line.product.id, line.quantity - 1)} aria-label="Reducir cantidad"><Minus size={14} /></button><span>{line.quantity}</span><button type="button" onClick={() => updateQuantity(line.product.id, line.quantity + 1)} disabled={line.quantity >= maxQuantity} aria-label="Aumentar cantidad"><Plus size={14} /></button></div></div><button className="remove-button" type="button" onClick={() => removeFromCart(line.product.id)} aria-label={`Eliminar ${line.product.name}`}><Trash2 size={16} /></button></article>)}</div><aside className="cart-summary"><p className="eyebrow">RESUMEN</p><SummaryRows totals={totals} bundleNames={appliedBundles(lines).map((applied) => applied.bundle.name)} /><div className="summary-total"><span>Total</span><strong>{formatPrice(totals.total)}</strong></div>{missing > 0 ? <p className="points-hint shipping-hint"><Truck size={14} /> Te faltan {formatPrice(missing)} para el envío gratis.</p> : <p className="points-hint shipping-hint"><Truck size={14} /> Tu pedido tiene envío gratis.</p>}<Link className="primary-link" to="/checkout">Continuar al checkout <ArrowUpRight size={17} /></Link></aside></div></section>
 }
 
 export function WishlistPage() {

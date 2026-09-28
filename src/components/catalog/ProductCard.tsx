@@ -2,7 +2,7 @@ import { Heart, ShoppingBag, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../../hooks/useCart'
 import { useWishlist } from '../../hooks/useWishlist'
-import type { FeaturedProduct } from '../../data/products'
+import { productSrcSet, type FeaturedProduct } from '../../data/products'
 
 export function ProductCard({ product }: { product: FeaturedProduct }) {
   const { addToCart } = useCart()
@@ -10,9 +10,9 @@ export function ProductCard({ product }: { product: FeaturedProduct }) {
   const isWishlisted = wishlistIds.includes(product.id)
   return (
     <article className={`product-card product-${product.state}`}>
-      <Link className="product-card-link" to={`/producto/${product.id}`} aria-label={`Ver detalle de ${product.name}`}>
+      <Link className="product-card-link" to={`/producto/${product.id}`}>
         <div className="product-visual">
-          <img src={product.image} alt={product.name} width={640} height={800} loading="lazy" decoding="async" />
+          <img src={product.image} srcSet={productSrcSet(product)} sizes="(min-width: 1280px) 240px, (min-width: 768px) 30vw, 50vw" alt={product.name} width={640} height={800} loading="lazy" decoding="async" />
           {product.label ? <span className="state-badge">{product.label}</span> : null}
         </div>
         <div className="product-meta"><span>{product.category}</span><span><Star size={11} fill="currentColor" /> {product.rating}</span></div>

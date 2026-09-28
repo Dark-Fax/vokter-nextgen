@@ -1,6 +1,7 @@
 import type { Order, OrderCustomer } from '../context/AccountContext'
 import type { CartLine } from '../context/CartContext'
 import { findProduct } from '../data/products'
+import { orderTotals, type OrderTotals } from './pricing'
 import { pointValue, pointsEarnedFor } from './points'
 import { priceOf } from './price'
 import { sanitizeInput } from './sanitizeInput'
@@ -44,23 +45,30 @@ function parseCustomer(raw: unknown): OrderCustomer | null {
   return customer.name ? customer : null
 }
 
-// Un pedido guardado solo se acepta si sus cifras cuadran con los precios del catálogo:
-// subtotal = suma de las líneas, descuento = puntos usados × valor del punto, total = subtotal − descuento
-// y puntos ganados = 1 por cada $1.000 del total. Si alguien edita un total o inventa puntos, se descarta.
+const sameTotals = (raw: Record<string, unknown>, expected: OrderTotals) => (Object.keys(expected) as (keyof OrderTotals)[]).every((key) => raw[key] === expected[key])
+
+// Pedidos anteriores a combos y envío (sin esos campos): total = subtotal − puntos.
+function legacyTotals(lines: CartLine[], pointsUsed: number): OrderTotals | null {
+  const subtotal = lines.reduce((total, line) => total + priceOf(line.product) * line.quantity, 0)
+  const discount = pointsUsed * pointValue
+  if (discount > subtotal) return null
+  return { subtotal, bundleDiscount: 0, shipping: 0, pointsUsed, discount, total: subtotal - discount, pointsEarned: pointsEarnedFor(subtotal - discount) }
+}
+
+// Un pedido guardado solo se acepta si sus cifras son exactamente las que calcula la tienda con los
+// precios del catálogo (subtotal, combos, envío, puntos y total). Si alguien edita un monto, se descarta.
 function parseOrder(raw: unknown): Order | null {
   if (!isRecord(raw) || typeof raw.id !== 'string' || !orderIdPattern.test(raw.id)) return null
   const createdAt = typeof raw.createdAt === 'string' && !Number.isNaN(Date.parse(raw.createdAt)) ? raw.createdAt : null
   const customer = parseCustomer(raw.customer)
   const lines = parseCartLines(raw.lines)
   if (!createdAt || !customer || !lines.length || !Array.isArray(raw.lines) || lines.length !== raw.lines.length) return null
-  const subtotal = lines.reduce((total, line) => total + priceOf(line.product) * line.quantity, 0)
   const pointsUsed = raw.pointsUsed
-  if (!(pointsUsed === 0 || isQuantity(pointsUsed)) || pointsUsed * pointValue > subtotal) return null
-  const discount = pointsUsed * pointValue
-  const total = subtotal - discount
-  const pointsEarned = pointsEarnedFor(total)
-  if (raw.subtotal !== subtotal || raw.discount !== discount || raw.total !== total || raw.pointsEarned !== pointsEarned) return null
-  return { id: raw.id, createdAt, lines, subtotal, pointsUsed, discount, total, pointsEarned, customer }
+  if (!(pointsUsed === 0 || isQuantity(pointsUsed))) return null
+  const isLegacy = raw.bundleDiscount === undefined && raw.shipping === undefined
+  const expected = isLegacy ? legacyTotals(lines, pointsUsed) : orderTotals(lines, pointsUsed, pointsUsed)
+  if (!expected || expected.pointsUsed !== pointsUsed || !sameTotals(isLegacy ? { ...raw, bundleDiscount: 0, shipping: 0 } : raw, expected)) return null
+  return { id: raw.id, createdAt, lines, customer, ...expected }
 }
 
 // El saldo de puntos no se lee de un número guardado (sería trivial falsificarlo): se calcula

@@ -7,6 +7,7 @@ const navItems = [
   { label: 'Tienda', to: '/tienda' },
   { label: 'Categorías', to: '/tienda?category=Audio' },
   { label: 'Puntos', to: '/cuenta?section=points' },
+  { label: 'App', to: '/app' },
 ]
 
 export function Navbar() {
