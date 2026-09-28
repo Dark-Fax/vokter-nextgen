@@ -1,5 +1,5 @@
 import { createContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import type { FeaturedProduct } from '../data/products'
+import { findProduct, type FeaturedProduct } from '../data/products'
 import { priceOf } from '../utils/price'
 
 export type CartLine = { product: FeaturedProduct; quantity: number }
@@ -12,7 +12,15 @@ function readCart(): CartLine[] {
     const stored = window.localStorage.getItem(storageKey)
     const parsed: unknown = stored ? JSON.parse(stored) : []
     if (!Array.isArray(parsed)) return []
-    return parsed.filter((line): line is CartLine => typeof line === 'object' && line !== null && 'product' in line && 'quantity' in line && typeof line.quantity === 'number' && line.quantity > 0)
+    // Se rehidrata cada línea con el producto vigente del catálogo: así los carritos guardados
+    // antes de un cambio de catálogo recuperan imagen y precio, y los productos retirados se descartan.
+    return parsed.flatMap((line: unknown) => {
+      if (typeof line !== 'object' || line === null || !('product' in line) || !('quantity' in line)) return []
+      const { product, quantity } = line as { product: unknown; quantity: unknown }
+      const id = typeof product === 'object' && product !== null && 'id' in product ? product.id : null
+      const current = typeof id === 'string' ? findProduct(id) : undefined
+      return current && typeof quantity === 'number' && quantity > 0 ? [{ product: current, quantity }] : []
+    })
   } catch {
     return []
   }
