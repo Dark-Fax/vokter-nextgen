@@ -1,4 +1,5 @@
 import { createContext, useEffect, useState, type ReactNode } from 'react'
+import { parseWishlist, readStored } from '../utils/storedData'
 
 type WishlistContextValue = {
   wishlistIds: string[]
@@ -9,13 +10,7 @@ const WishlistContext = createContext<WishlistContextValue | null>(null)
 const storageKey = 'vokter-wishlist'
 
 function readWishlist() {
-  try {
-    const stored = window.localStorage.getItem(storageKey)
-    const parsed: unknown = stored ? JSON.parse(stored) : []
-    return Array.isArray(parsed) && parsed.every((id) => typeof id === 'string') ? parsed : []
-  } catch {
-    return []
-  }
+  return parseWishlist(readStored(storageKey))
 }
 
 export function WishlistProvider({ children }: { children: ReactNode }) {

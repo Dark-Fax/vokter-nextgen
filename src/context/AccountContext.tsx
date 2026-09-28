@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState, type ReactNode } from 'react'
 import type { CartLine } from './CartContext'
 import { maxRedeemablePoints, pointValue, pointsEarnedFor } from '../utils/points'
+import { parseAccount, readStored } from '../utils/storedData'
 
 export type OrderCustomer = { name: string; email: string; phone: string; address: string; city: string }
 export type Order = { id: string; createdAt: string; lines: CartLine[]; subtotal: number; pointsUsed: number; discount: number; total: number; pointsEarned: number; customer: OrderCustomer }
@@ -10,20 +11,10 @@ type AccountContextValue = { points: number; orders: Order[]; placeOrder: (input
 
 const AccountContext = createContext<AccountContextValue | null>(null)
 const storageKey = 'vokter-account'
-const initialPoints = 240
 
-function readAccount(): { points: number; orders: Order[] } {
-  try {
-    const stored = window.localStorage.getItem(storageKey)
-    const parsed: unknown = stored ? JSON.parse(stored) : null
-    if (!parsed || typeof parsed !== 'object') return { points: initialPoints, orders: [] }
-    const record = parsed as { points?: unknown; orders?: unknown }
-    const points = typeof record.points === 'number' && record.points >= 0 ? Math.floor(record.points) : initialPoints
-    const orders = Array.isArray(record.orders) ? (record.orders.filter((order): order is Order => typeof order === 'object' && order !== null && 'id' in order && 'total' in order)) : []
-    return { points, orders }
-  } catch {
-    return { points: initialPoints, orders: [] }
-  }
+// El saldo se recalcula desde el historial validado; ver utils/storedData.ts.
+function readAccount() {
+  return parseAccount(readStored(storageKey))
 }
 
 function createOrderId() { return `VK-${Date.now().toString(36).toUpperCase().slice(-6)}` }
