@@ -51,8 +51,9 @@
 @media (min-width: 768px) { :root { --gutter: 24px; --grid-gap: 16px; --section-y: 72px; --topbar-h: 72px; } }
 @media (min-width: 1024px) { :root { --gutter: 40px; --grid-gap: 24px; --section-y: 96px; --topbar-h: 82px; } }
 
-/* Al saltar a una sección, el encabezado fijo no tapa su comienzo. */
-html { scroll-padding-top: calc(var(--topbar-h) + var(--safe-top) + var(--space-4)); }
+/* Al saltar a una sección o a un campo, el encabezado y la barra inferior fijos no lo tapan. */
+html { scroll-padding-top: calc(var(--topbar-h) + var(--safe-top) + var(--space-4)); scroll-padding-bottom: calc(var(--tabbar-h) + var(--safe-bottom) + var(--space-4)); }
+@media (min-width: 768px) { html { scroll-padding-bottom: var(--space-4); } }
 body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--c-bg); }
 button, a, input, select { font: inherit; }
 a { color: inherit; text-decoration: none; }

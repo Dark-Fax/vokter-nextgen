@@ -55,6 +55,8 @@ h1 em { color: var(--c-lime); font-style: normal; }
 .tab-bar a { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1); color: var(--c-muted); font-size: .64rem; letter-spacing: .04em; transition: color .2s ease; }
 .tab-bar a.active { color: var(--c-accent); }
 .tab-cart b { position: absolute; top: 8px; left: calc(50% + 6px); display: grid; place-items: center; min-width: 16px; height: 16px; padding: 0 4px; box-sizing: border-box; border-radius: 8px; background: var(--c-accent); color: var(--c-bg); font-size: .6rem; }
+/* Mientras se escribe, la barra inferior se oculta: con el teclado abierto tapaba los campos. */
+body:has(input:focus, select:focus, textarea:focus) .tab-bar { display: none; }
 @media (min-width: 768px) { .tab-bar { display: none; } }
 
 /* ---------- Hero ---------- */
@@ -232,7 +234,8 @@ h1 em { color: var(--c-lime); font-style: normal; }
 .payment-note svg { flex: none; color: var(--c-accent); }
 .checkout-fieldset { display: grid; gap: var(--space-4); min-width: 0; margin: 0; padding: 0; border: 0; }
 .checkout-fieldset:disabled .checkout-field { opacity: .55; }
-.checkout-submit { justify-content: center; margin-top: 10px; }
+.checkout-submit { justify-content: center; width: 100%; margin-top: var(--space-2); }
+.checkout-summary .text-link { display: flex; justify-content: center; }
 .spinner { animation: spin .9s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .processing-overlay { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: var(--gutter); background: rgb(7 16 20 / .82); backdrop-filter: blur(6px); animation: fade-in .2s ease; }
@@ -398,5 +401,13 @@ h1 em { color: var(--c-lime); font-style: normal; }
 .download-steps strong { display: block; margin: var(--space-2) 0; font: 500 1.15rem 'Space Grotesk', sans-serif; }
 .download-steps p { margin: 0; color: var(--c-muted); font-size: .85rem; line-height: 1.6; }
 @media (min-width: 768px) { .download-grid { grid-template-columns: minmax(0, 420px) auto; align-items: start; gap: var(--space-8); } .download-qr { display: block; } .download-steps { grid-template-columns: repeat(3, 1fr); } }
+
+.download-help { max-width: 760px; margin-top: var(--space-7); padding-top: var(--space-6); border-top: 1px solid var(--c-line); }
+.download-help details { border-bottom: 1px solid var(--c-line); }
+.download-help summary { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); min-height: 48px; padding: var(--space-3) 0; cursor: pointer; font-weight: 500; list-style: none; }
+.download-help summary::-webkit-details-marker { display: none; }
+.download-help summary::after { content: '+'; flex: none; color: var(--c-accent); font-size: 1.3rem; transition: transform .2s ease; }
+.download-help details[open] summary::after { transform: rotate(45deg); }
+.download-help details p { margin: 0 0 var(--space-4); color: var(--c-muted); font-size: .88rem; line-height: 1.6; }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
